@@ -1,0 +1,12 @@
+SrcFile          : Binary image file (.bin/.img) or tape (.tap) file
+DstFile          : Wave file (default: SrcFile.wav) or tape (.tap) file
+Options
+-t, --type=TYPE  : Source file type
+                    img  BASIC program binary image (default)
+                    bin  Plain binary image (same as img in this format)
+                    tap  Tape file
+-s, --sync=VALUE : Synchronisation duration in seconds (default: 3)
+-q, --quiet      : Quiet mode (minimal display output)
+    --tap        : Destination file: Tape (.tap) format, not wave (.wav) file
+    --version    : Display version information
+    --help       : Display this information

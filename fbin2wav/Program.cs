@@ -43,7 +43,30 @@ namespace PC1500FastLoadTools.FBin2Wav {
 
 			try {
 				Arguments.Parse(args, availableOptions, abbreviatedOptions, out options, out inputFile, out outputFile);
-				// Check the supplied options/arguments.
+			} catch (Exception ex) {
+				Console.Error.WriteLine("{0}: {1}", assemblyName.Name, ex.Message);
+				Console.Error.WriteLine("{0}: Use '{0} --help' to show help.", assemblyName.Name);
+				return 1;
+			}
+
+			// Should we display the version information?
+			if (options.ContainsKey("--version")) {
+				Console.WriteLine("{0} version {1}", assemblyName.Name, assemblyName.Version);
+				var copyright = (AssemblyCopyrightAttribute[])assembly.GetCustomAttributes(typeof(AssemblyCopyrightAttribute), false);
+				if (copyright.Length > 0) Console.WriteLine(copyright[0].Copyright);
+				if (!options.ContainsKey("--help")) return 0;
+			}
+
+			// Should we display the help information?
+			if (options.ContainsKey("--help")) {
+				var name = assembly.GetName();
+				Console.WriteLine("Usage: {0} [Options] SrcFile(.typ) [DstFile(.wav/.tap)]", name.Name);
+				Console.WriteLine(Properties.Resources.Help);
+				return 0;
+			}
+
+			// Check the supplied options/arguments.
+			try {
 				if (options.ContainsKey("--type") && options["--type"] != "img" && options["--type"] != "bin" && options["--type"] != "tap") throw new ArgumentException(string.Format("{0} is not a valid option for the output file type.", options["--type"]));
 				if (options.ContainsKey("--sync") && !float.TryParse(options["--sync"], NumberStyles.AllowDecimalPoint | NumberStyles.AllowExponent, CultureInfo.InvariantCulture, out sync)) throw new ArgumentException(string.Format("Could not parse {0} as sync value.", options["--sync"]));
 				if (inputFile == null) throw new ArgumentException("Input filename not specified.");
@@ -51,13 +74,6 @@ namespace PC1500FastLoadTools.FBin2Wav {
 				Console.Error.WriteLine("{0}: {1}", assemblyName.Name, ex.Message);
 				Console.Error.WriteLine("{0}: Use '{0} --help' to show help.", assemblyName.Name);
 				return 1;
-			}
-
-			// Should we display the help information?
-			if (options.ContainsKey("--help")) {
-				var name = assembly.GetName();
-				Console.WriteLine("Usage: {0} [Options] SrcFile(.typ) [DstFile(.wav/.tap)]", name.Name);
-				return 0;
 			}
 
 			// Load the tap file from the input.

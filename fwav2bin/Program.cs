@@ -38,6 +38,30 @@ namespace PC1500FastLoadTools.FWav2Bin {
 
 			try {
 				Arguments.Parse(args, availableOptions, abbreviatedOptions, out options, out inputFile, out outputFile);
+			} catch (Exception ex) {
+				Console.Error.WriteLine("{0}: {1}", assemblyName.Name, ex.Message);
+				Console.Error.WriteLine("{0}: Use '{0} --help' to show help.", assemblyName.Name);
+				return 1;
+			}
+			
+			// Should we display the version information?
+			if (options.ContainsKey("--version")) {
+				Console.WriteLine("{0} version {1}", assemblyName.Name, assemblyName.Version);
+				var copyright = (AssemblyCopyrightAttribute[])assembly.GetCustomAttributes(typeof(AssemblyCopyrightAttribute), false);
+				if (copyright.Length > 0) Console.WriteLine(copyright[0].Copyright);
+				if (!options.ContainsKey("--help")) return 0;
+			}
+
+			// Should we display the help information?
+			if (options.ContainsKey("--help")) {
+				var name = assembly.GetName();
+				Console.WriteLine("Usage: {0} [Options] SrcFile(.wav/.tap) [DstFile(.typ)]", name.Name);
+				Console.WriteLine(Properties.Resources.Help);
+				return 0;
+			}
+
+			// Check the supplied options/arguments.
+			try {
 				// Check the supplied options/arguments.
 				if (options.ContainsKey("--type") && options["--type"] != "img" && options["--type"] != "bin" && options["--type"] != "tap") throw new ArgumentException(string.Format("{0} is not a valid option for the output file type.", options["--type"]));
 				if (inputFile == null) throw new ArgumentException("Input filename not specified.");
@@ -45,21 +69,6 @@ namespace PC1500FastLoadTools.FWav2Bin {
 				Console.Error.WriteLine("{0}: {1}", assemblyName.Name, ex.Message);
 				Console.Error.WriteLine("{0}: Use '{0} --help' to show help.", assemblyName.Name);
 				return 1;
-			}
-
-			// Should we display the help information?
-			if (options.ContainsKey("--help")) {
-				var name = assembly.GetName();
-				Console.WriteLine("Usage: {0} [Options] SrcFile(.wav/.tap) [DstFile(.typ)]", name.Name);
-				return 0;
-			}
-
-			// Should we display the version information?
-			if (options.ContainsKey("--version")) {
-				Console.WriteLine("{0} version {1}", assemblyName.Name, assemblyName.Version);
-				var copyright = (AssemblyCopyrightAttribute[])assembly.GetCustomAttributes(typeof(AssemblyCopyrightAttribute), false);
-				if (copyright.Length > 0) Console.WriteLine(copyright[0].Copyright);
-				return 0;
 			}
 
 			// Are we reading a tap file?

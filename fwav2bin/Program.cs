@@ -39,7 +39,7 @@ namespace PC1500FastLoadTools.FWav2Bin {
 			try {
 				Arguments.Parse(args, availableOptions, abbreviatedOptions, out options, out inputFile, out outputFile);
 				// Check the supplied options/arguments.
-				if (options.ContainsKey("--type") && options["--type"] != "img" && options["--type"] != "tap") throw new ArgumentException(string.Format("{0} is not a valid option for the output file type.", options["--type"]));
+				if (options.ContainsKey("--type") && options["--type"] != "img" && options["--type"] != "bin" && options["--type"] != "tap") throw new ArgumentException(string.Format("{0} is not a valid option for the output file type.", options["--type"]));
 				if (inputFile == null) throw new ArgumentException("Input filename not specified.");
 			} catch (Exception ex) {
 				Console.Error.WriteLine("{0}: {1}", assemblyName.Name, ex.Message);
@@ -50,7 +50,7 @@ namespace PC1500FastLoadTools.FWav2Bin {
 			// Should we display the help information?
 			if (options.ContainsKey("--help")) {
 				var name = assembly.GetName();
-				Console.WriteLine("Usage: {0} [Options] SrcFile(.typ) [DstFile(.wav/.tap)]", name.Name);
+				Console.WriteLine("Usage: {0} [Options] SrcFile(.wav/.tap) [DstFile(.typ)]", name.Name);
 				return 0;
 			}
 
@@ -83,8 +83,8 @@ namespace PC1500FastLoadTools.FWav2Bin {
 			// What's the output filename?
 			if (outputFile == null) {
 				outputFile = Path.GetFileNameWithoutExtension(inputFile);
-				if (options.ContainsKey("--type") && options["--type"] == "tap") {
-					outputFile += ".tap";
+				if (options.ContainsKey("--type")) {
+					outputFile += "." + options["--type"];
 				} else {
 					outputFile += ".img";
 				}
